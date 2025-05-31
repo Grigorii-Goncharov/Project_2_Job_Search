@@ -2,8 +2,15 @@ from abc import ABC, abstractmethod
 
 class BaseAPI(ABC):
     """Абстрактный класс для работы с API сервиса с вакансиями"""
+    @abstractmethod
     def get_vacancies(self):
         """Абстрактный метод получения вакансий"""
+        pass
+
+    @property
+    @abstractmethod
+    def url(self):
+        pass
 
 class BaseSaver(ABC):
     """Абстрактный класс для работы с ваканаиями"""
