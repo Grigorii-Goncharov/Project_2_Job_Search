@@ -1,5 +1,6 @@
 from src.class_vacancy import Vacancy
 import pprint
+from src.class_api import HeadHunterAPI
 
 # Создание экземпляра класса для работы с API сайтов с вакансиями
 # hh_api = HeadHunterAPI()
@@ -42,10 +43,10 @@ import pprint
 if __name__ == "__main__":
     test = "https://api.hh.ru/vacancies"
     # Создание экземпляра класса для работы с API сайтов с вакансиями
-    # hh_api = HeadHunterAPI(test)
+    hh_api = HeadHunterAPI(test)
     #
     # # Получение вакансий с hh.ru в формате JSON
-    # hh_vacancies = hh_api.get_vacancies("Python")
+    hh_vacancies = hh_api.get_vacancies("Python")
     # Преобразование набора данных из JSON в список объектов
     vacancy = Vacancy("Python Developer", "<https://hh.ru/vacancy/123456>", "100 000-150 000 руб.", "Требования: опыт работы от 3 лет...")
     # vacancies_list = Vacancy.cast_to_object_list(hh_vacancies)

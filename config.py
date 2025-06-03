@@ -1,6 +1,1 @@
-import os
-
-script_dir = os.path.dirname(os.path.abspath(__file__))
-
-# Формируем правильный путь к JSON-файлу
-path_to_json = os.path.join(script_dir, "./data/vacancy.json")
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
