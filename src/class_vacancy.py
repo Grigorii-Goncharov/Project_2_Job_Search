@@ -46,7 +46,7 @@ class Vacancy:
     def __salary_to(self) -> int:
         """Валидация данных по зарплате для поля 'до'"""
         self.salary_to = 0
-        if self.__salary:  #
+        if self.__salary:
             self.salary_to = self.__salary.get("to") or 0
 
             try:
@@ -65,6 +65,26 @@ class Vacancy:
                 f"{self.salary_from} - "
                 f"{self.salary_to}\n "
                 )
+
+    def __ge__(self, other):
+        if not isinstance(other, Vacancy):
+            raise AttributeError("Невозможно сравнить разные типы")
+        return self.salary_from >= other.salary_from
+
+    def __le__(self, other):
+        if not isinstance(other, Vacancy):
+            raise AttributeError("Невозможно сравнить разные типы")
+        return self.salary_from <= other.salary_from
+
+    def __gt__(self, other):
+        if not isinstance(other, Vacancy):
+            raise AttributeError("Невозможно сравнить разные типы")
+        return self.salary_from > other.salary_from
+
+    def __lt__(self, other):
+        if not isinstance(other, Vacancy):
+            raise AttributeError("Невозможно сравнить разные типы")
+        return self.salary_from < other.salary_from
 
     @staticmethod
     def cast_to_object_list(data: dict) -> "Vacancy":
@@ -94,6 +114,10 @@ class Vacancy:
             vacancy_list.append(vacancy)
 
         return vacancy_list
+
+
+
+
 
 if __name__ == "__main__":
     vacancy = Vacancy('Python-разработчик',

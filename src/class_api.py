@@ -37,6 +37,7 @@ class HeadHunterAPI(BaseAPI):
             return False
 
     def get_vacancies(self, text: str, per_page: int = 10) -> list[dict]:
+        """Метод получения вакансий"""
         if not self.__response_check():
             raise ConnectionError("API недоступно. Невозможно получить вакансии.")
 
