@@ -46,7 +46,7 @@ class Vacancy:
     def __salary_to(self) -> int:
         """Валидация данных по зарплате для поля 'до'"""
         self.salary_to = 0
-        if self.__salary:
+        if self.__salary:  #
             self.salary_to = self.__salary.get("to") or 0
 
             try:
@@ -62,26 +62,30 @@ class Vacancy:
                 f"{self.area} "
                 f"{self.__salary} "
                 f"{self.description} "
-                f"{self.salary_from} - "
-                f"{self.salary_to}\n "
-                )
+                f"{self.salary_from}-"
+                f"{self.salary_to}\n"
+                "--------------------------")
 
     def __ge__(self, other):
+        """Методы сравнения конкретных вакансий"""
         if not isinstance(other, Vacancy):
             raise AttributeError("Невозможно сравнить разные типы")
         return self.salary_from >= other.salary_from
 
     def __le__(self, other):
+        """Методы сравнения конкретных вакансий"""
         if not isinstance(other, Vacancy):
             raise AttributeError("Невозможно сравнить разные типы")
         return self.salary_from <= other.salary_from
 
     def __gt__(self, other):
+        """Методы сравнения конкретных вакансий"""
         if not isinstance(other, Vacancy):
             raise AttributeError("Невозможно сравнить разные типы")
         return self.salary_from > other.salary_from
 
     def __lt__(self, other):
+        """Методы сравнения конкретных вакансий"""
         if not isinstance(other, Vacancy):
             raise AttributeError("Невозможно сравнить разные типы")
         return self.salary_from < other.salary_from
@@ -115,18 +119,63 @@ class Vacancy:
 
         return vacancy_list
 
+    @staticmethod
+    def sort_vacancies_by_salary(vacancies: list["Vacancy"], reverse: bool = True) -> list["Vacancy"]:
+        """Сортировка списка вакансий по зарплате (по возрастанию или убыванию)"""
+        return sorted(vacancies, key=lambda v: v.salary_from, reverse=reverse)
 
 
+    @classmethod
+    def from_dict(cls, data: dict):
+        return cls(
+            name=data.get("name"),
+            link=data.get("link"),
+            area=data.get("area"),
+            salary={"from": data.get("salary_from"), "to": data.get("salary_to")},
+            description=data.get("description")
+        )
+
+    # В class Vacancy:
+    def to_dict(self) -> dict:
+        return {
+            "name": self.name,
+            "link": self.link,
+            "area": self.area,
+            "salary_from": self.salary_from,
+            "salary_to": self.salary_to,
+            "description": self.description
+        }
 
 
-if __name__ == "__main__":
-    vacancy = Vacancy('Python-разработчик',
-                      'https://api.hh.ru/areas/1',
-                      {'from': 150000, 'to': 300000, 'currency': 'RUR'},
-                      "Москва",
-                      "python")
-    print(vacancy)
-    load = HeadHunterAPI()  # создаем объект API
-    result = load.get_vacancies('Разработчик')
-    vacancy_json = vacancy.cast_to_object_list(result)
-    pprint.pprint(vacancy_json)
+# if __name__ == "__main__":
+    # hh_api = HeadHunterAPI() # создаем объект API
+    # data = hh_api.get_vacancies("Python разработчик")
+    # vacancy = Vacancy('Плотник',
+    #                   'https://api.hh.ru/areas/1',
+    #                   {'from': 5000000, 'to': 180000, 'currency': 'RUR'},
+    #                   "Москва",
+    #                   "Выполнение столярно-плотницких работ")
+    #
+    # print(vacancy)
+    # pprint.pprint(vacancies)
+
+    # vacancies = Vacancy.cast_to_object_list(data)
+    # if len(vacancies) >= 2:
+    #     if vacancies[0] > vacancies[9]:
+    #         print("Вакансия 0 лучше вакансии 1")
+    #     elif vacancies[0] < vacancies[1]:
+    #         print("Вакансия 1 лучше вакансии 0")
+    #     else:
+    #         print("Зарплаты равны")
+    # else:
+    #     print("Недостаточно вакансий для сравнения")
+
+    # # Сортируем по возрастанию зарплаты
+    # sorted_vacancies_asc = Vacancy.sort_vacancies_by_salary(vacancies)
+    #
+    # # Сортируем по убыванию зарплаты
+    # sorted_vacancies_desc = Vacancy.sort_vacancies_by_salary(vacancies, reverse=False)
+    #
+    # # Выводим результат
+    # for vacancy in sorted_vacancies_desc:
+    #     print(vacancy)
