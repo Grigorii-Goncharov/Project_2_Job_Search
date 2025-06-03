@@ -52,9 +52,9 @@ class HeadHunterAPI(BaseAPI):
 
 if __name__ == "__main__":
     load = HeadHunterAPI()  # создаем объект API
-    vac = load.vacancies
-    print(vac)
+    vacancy = load.vacancies
+    print(vacancy)
     result = load.get_vacancies('Рзработчик')
     # pprint.pprint(result)# получен json
-    vac = load.vacancies
-    print(vac)
+    vacancy  = load.vacancies
+    print(vacancy)

@@ -1,22 +1,70 @@
-import os
 import pprint
+from src.class_api import HeadHunterAPI
 
-# Получаем путь к текущему скрипту
-# script_dir = os.path.dirname(os.path.abspath(__file__))
-# path_to_json = os.path.join(script_dir, "../data/vacancy_result.json")
+class Vacancy:
+    """Класс для обработки вакансий"""
 
-class Vacancy():
-    """ Класс для работы с вакансиями"""
-    __slots__ = ("text", "link", "salary_from_to", "experience")
-    def __init__(self, text, link, salary_from_to, experience):
-            self.text = text
-            self.link = link
-            self.salary_from_to = salary_from_to
-            self.experience = experience
+    __slots__ = (
+        "name",
+        "link",
+        "area",
+        "__salary",
+        "description",
+        "salary_from",
+        "salary_to",
+    )
+
+    def __init__(
+        self,
+        name: str,
+        link: str,
+        salary: dict[str, int, float],
+        area: str,
+        description: str
+    ):
+
+        self.name = name
+        self.link = link
+        self.area = area
+        self.__salary = salary #Зарплата подробно в словаре
+        self.description = description
+        self.salary_from = self.__salary_from() #Валидируем строку от из словаря
+        self.salary_to = self.__salary_to() #Валидируем строку до из словаря
+
+    def __salary_from(self) -> int:
+        """Валидация данных по зарплате для поля 'от'"""
+        self.salary_from = 0
+        if self.__salary:  # если есть данные о зарплате
+            self.salary_from = self.__salary.get("from") or 0
+
+            try:
+                self.salary_from = int(self.salary_from)
+            except (TypeError, ValueError):
+                self.salary_from = 0
+        return self.salary_from
+
+    def __salary_to(self) -> int:
+        """Валидация данных по зарплате для поля 'до'"""
+        self.salary_to = 0
+        if self.__salary:  #
+            self.salary_to = self.__salary.get("to") or 0
+
+            try:
+                self.salary_to = int(self.salary_to)
+            except (TypeError, ValueError):
+                self.salary_to = 0
+        return self.salary_to
 
     def __repr__(self) -> str:
         """Метод преобразования атрибутов в строку и вывод в консоль"""
-        return f"{self.text}, ссылка на вакансию: {self.link}, {self.salary_from_to} {self.experience}"
+        return (f"{self.name} "
+                f"{self.link} "
+                f"{self.area} "
+                f"{self.__salary} "
+                f"{self.description} "
+                f"{self.salary_from} - "
+                f"{self.salary_to}\n "
+                )
 
     @staticmethod
     def cast_to_object_list(data: dict) -> "Vacancy":
@@ -28,30 +76,33 @@ class Vacancy():
             name = item.get("name")
             link = item.get("url")
 
-            salary = item.get("salary")
-            salary_from = salary.get("from")
-            salary_to = salary.get("to")
+            area_full = item.get("area")
+            area = area_full.get("name")
 
-            experience = item.get("experience")
-            experience_name = experience.get("name")
+            description = item.get("snippet", {}).get("responsibility") or item.get("description")
+
+            salary = item.get("salary")
 
             # Создание объекта Vacancy
             vacancy = Vacancy(
-                text=name,
+                name=name,
                 link=link,
-                salary_from_to=f'{salary_from}-{salary_to}',
-                experience=experience_name
+                area=area,
+                salary = salary,
+                description=description
             )
             vacancy_list.append(vacancy)
 
         return vacancy_list
 
-
-
-
-
-
-# if __name__ == "__main__":
-#     vacancy = Vacancy("Python Developer", "<https://hh.ru/vacancy/123456>", "100 000-150 000 руб.",
-#                       "Требования: опыт работы от 3 лет...")
-#     print(vacancy)
+if __name__ == "__main__":
+    vacancy = Vacancy('Python-разработчик',
+                      'https://api.hh.ru/areas/1',
+                      {'from': 150000, 'to': 300000, 'currency': 'RUR'},
+                      "Москва",
+                      "python")
+    print(vacancy)
+    load = HeadHunterAPI()  # создаем объект API
+    result = load.get_vacancies('Разработчик')
+    vacancy_json = vacancy.cast_to_object_list(result)
+    pprint.pprint(vacancy_json)
