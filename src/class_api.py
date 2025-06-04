@@ -6,7 +6,7 @@ import os
 
 # Получаем путь к текущему скрипту
 script_dir = os.path.dirname(os.path.abspath(__file__))
-path_to_json = os.path.join(script_dir, "../data/vacancy_result.json")
+path_to_json = os.path.join(script_dir, "../data/vacancy_hh.json")
 
 
 class HeadHunterAPI(BaseAPI) :
@@ -26,7 +26,7 @@ class HeadHunterAPI(BaseAPI) :
     @property
     def headers(self) -> None:
         """Метод получение приватного атрибута headers"""
-        return self.__url
+        return self.__headers
 
     @property
     def vacancies(self) -> None:
@@ -36,7 +36,7 @@ class HeadHunterAPI(BaseAPI) :
     def __response_check(self) -> bool:
         """Проверяет доступность API - для внутренних методов"""
         try:
-            response = requests.get(self.url, timeout=5)
+            response = requests.get(self.__url, timeout=5)
             response.raise_for_status() #if status_code == 200
             return True
         except requests.exceptions.RequestException:
@@ -49,7 +49,7 @@ class HeadHunterAPI(BaseAPI) :
 
         params = {'text': text, 'per_page': per_page}
         try:
-            response = requests.get(self.url, headers=self.__headers, params=params)
+            response = requests.get(self.__url, headers=self.__headers, params=params)
             response.raise_for_status()  # Если код будет 200
             self.__vacancies=response.json().get('items', [])  # получение items если найдет( или [] )
             return self.__vacancies
@@ -62,6 +62,9 @@ class HeadHunterAPI(BaseAPI) :
 #     vac = load.get_vacancies
 #     print(vac)
 #     result = load.get_vacancies('Плотник')
-#     # pprint.pprint(result)# получен json
-#     vac = load.vacancies
-#     print(vac)
+#     print("=== Получаем вакансии с HH и сохраняем в файл ===")
+#     print("Полученные сырые данные:", result)  # DEBUG
+    # pprint.pprint(result)# получен json
+    # vac = load.vacancies
+    # print(vac)
+

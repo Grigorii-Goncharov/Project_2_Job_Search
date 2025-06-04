@@ -1,35 +1,45 @@
+from typing import List, Dict, Any, Optional, Union
 import pprint
 from src.class_api import HeadHunterAPI
+from src.utills import json_load
+import json
 
 class Vacancy:
     """Класс для обработки вакансий"""
 
     __slots__ = (
+        "id",
         "name",
-        "link",
         "area",
         "__salary",
         "description",
         "salary_from",
-        "salary_to",
+        "salary_to"
     )
 
     def __init__(
-        self,
-        name: str,
-        link: str,
-        salary: dict[str, int, float],
-        area: str,
-        description: str
+            self,
+            name: str,
+            id: str,
+            salary: dict[str, int, float],
+            area: str,
+            description: str
     ):
 
         self.name = name
-        self.link = link
-        self.area = area
-        self.__salary = salary #Зарплата подробно в словаре
+        self.id = id
+
+        # Если area — это словарь (например, из API), берём 'name'
+        if isinstance(area, dict):
+            self.area = area.get("name", "Не указано")
+        else:
+            self.area = area or "Не указано"
+
+        self.__salary = salary  # Зарплата подробно в словаре
         self.description = description
-        self.salary_from = self.__salary_from() #Валидируем строку от из словаря
-        self.salary_to = self.__salary_to() #Валидируем строку до из словаря
+        self.salary_from = self.__salary_from()  # Валидируем строку от из словаря
+        self.salary_to = self.__salary_to()  # Валидируем строку до из словаря
+
 
     def __salary_from(self) -> int:
         """Валидация данных по зарплате для поля 'от'"""
@@ -52,19 +62,19 @@ class Vacancy:
             try:
                 self.salary_to = int(self.salary_to)
             except (TypeError, ValueError):
-                self.salary_to = 0
+                self.salary_to = "по договоренности"
         return self.salary_to
 
-    def __repr__(self) -> str:
+
+    def __str__(self) -> str:
         """Метод преобразования атрибутов в строку и вывод в консоль"""
-        return (f"{self.name} "
-                f"{self.link} "
-                f"{self.area} "
-                f"{self.__salary} "
-                f"{self.description} "
-                f"{self.salary_from}-"
-                f"{self.salary_to}\n"
-                "--------------------------")
+        return (f" id Вакансии: {self.id}\n "
+                f"Должность: {self.name}\n "
+                f"Город: {self.area}\n "
+                f"Описание: {self.description}\n "
+                f"Зарплата от: {self.salary_from}\n "
+                f"Зарплата до: {self.salary_to}\n")
+
 
     def __ge__(self, other):
         """Методы сравнения конкретных вакансий"""
@@ -91,91 +101,116 @@ class Vacancy:
         return self.salary_from < other.salary_from
 
     @staticmethod
-    def cast_to_object_list(data: dict) -> "Vacancy":
-        """метод преобразования JSON данных в объект """
+    def cast_to_object_list(data: List[Dict[str, Any]]) -> List["Vacancy"]:
+        """Преобразует список JSON-объектов в список объектов Vacancy."""
         vacancy_list = []
 
         for item in data:
-            # Извлечение полей из JSON-объекта вакансии
-            name = item.get("name")
-            link = item.get("url")
+            try:
+                name = item.get("name")
+                id = item.get("id")
 
-            area_full = item.get("area")
-            area = area_full.get("name")
+                area = item.get("area", {})
 
-            description = item.get("snippet", {}).get("responsibility") or item.get("description")
+                snippet = item.get("snippet", {})
+                responsibility = snippet.get("responsibility")
+                description = responsibility or item.get("description", "")
 
-            salary = item.get("salary")
+                salary = item.get("salary", {})
 
-            # Создание объекта Vacancy
-            vacancy = Vacancy(
-                name=name,
-                link=link,
-                area=area,
-                salary = salary,
-                description=description
-            )
-            vacancy_list.append(vacancy)
+                # Создание объекта Vacancy
+                vacancy = Vacancy(
+                    id=id,
+                    name=name,
+                    area=area,
+                    salary=salary,
+                    description=description
+                )
+                vacancy_list.append(vacancy)
+
+
+            except Exception as e:
+                print(f"Ошибка при обработке вакансии: {e}")
+                continue
 
         return vacancy_list
 
     @staticmethod
     def sort_vacancies_by_salary(vacancies: list["Vacancy"], reverse: bool = True) -> list["Vacancy"]:
         """Сортировка списка вакансий по зарплате (по возрастанию или убыванию)"""
-        return sorted(vacancies, key=lambda v: v.salary_from, reverse=reverse)
+        return sorted(vacancies, key=lambda x: x.salary_from, reverse=reverse)
 
 
-    @classmethod
-    def from_dict(cls, data: dict):
-        return cls(
-            name=data.get("name"),
-            link=data.get("link"),
-            area=data.get("area"),
-            salary={"from": data.get("salary_from"), "to": data.get("salary_to")},
-            description=data.get("description")
-        )
-
-    # В class Vacancy:
     def to_dict(self) -> dict:
+        """Преобразует объект Vacancy в словарь для сериализации в JSON"""
         return {
+            "id": self.id,
             "name": self.name,
-            "link": self.link,
             "area": self.area,
+            "salary": self.__salary,  # Сохраняем оригинальный словарь с зарплатой
+            "description": self.description,
             "salary_from": self.salary_from,
-            "salary_to": self.salary_to,
-            "description": self.description
-        }
+            "salary_to": self.salary_to}
+
+
+    @staticmethod
+    def load_from_json(filename: str) -> List["Vacancy"]:
+        """Загружает список вакансий из JSON-файла обратно в объекты Vacancy"""
+        try:
+            data = json_load(filename)
+
+            vacancies = []
+            for item in data:
+                vacancy = Vacancy(
+                    id=item["id"],
+                    name=item["name"],
+                    area=item["area"]["name"],
+                    salary=item["salary"],
+                    description=item["description"]
+                )
+                vacancies.append(vacancy)
+            return vacancies
+
+        except FileNotFoundError:
+            print(f"Файл {filename} не найден.")
+            return []
+        except json.JSONDecodeError:
+            print(f"Ошибка при чтении JSON из файла {filename}.")
+            return []
 
 
 # if __name__ == "__main__":
-    # hh_api = HeadHunterAPI() # создаем объект API
-    # data = hh_api.get_vacancies("Python разработчик")
-    # vacancy = Vacancy('Плотник',
-    #                   'https://api.hh.ru/areas/1',
-    #                   {'from': 5000000, 'to': 180000, 'currency': 'RUR'},
-    #                   "Москва",
-    #                   "Выполнение столярно-плотницких работ")
-    #
-    # print(vacancy)
-    # pprint.pprint(vacancies)
-
-    # vacancies = Vacancy.cast_to_object_list(data)
-    # if len(vacancies) >= 2:
-    #     if vacancies[0] > vacancies[9]:
-    #         print("Вакансия 0 лучше вакансии 1")
-    #     elif vacancies[0] < vacancies[1]:
-    #         print("Вакансия 1 лучше вакансии 0")
-    #     else:
-    #         print("Зарплаты равны")
-    # else:
-    #     print("Недостаточно вакансий для сравнения")
-
-    # # Сортируем по возрастанию зарплаты
-    # sorted_vacancies_asc = Vacancy.sort_vacancies_by_salary(vacancies)
-    #
-    # # Сортируем по убыванию зарплаты
-    # sorted_vacancies_desc = Vacancy.sort_vacancies_by_salary(vacancies, reverse=False)
-    #
-    # # Выводим результат
-    # for vacancy in sorted_vacancies_desc:
-    #     print(vacancy)
+#     hh_api = HeadHunterAPI() # создаем объект API
+#     data = hh_api.get_vacancies("Python разработчик")
+#     vacancies_list = Vacancy.cast_to_object_list(data)
+#     print("Преобразованные вакансии:", vacancies_list)
+#     vacancy = Vacancy('12345678',
+#                       'Разработчик',
+#                       {'from': 2500000, 'to': 500000, 'currency': 'RUR'},
+#                       "Москва",
+#                       "Разработчик разработок разрабатыватель"
+#                       )
+#
+#     print(vacancy)
+#     pprint.pprint(vacancy)
+#
+#     vacancies = Vacancy.cast_to_object_list(data)
+#     if len(vacancies) >= 2:
+#         if vacancies[0] > vacancies[9]:
+#             print("Вакансия 0 лучше вакансии 1")
+#         elif vacancies[0] < vacancies[1]:
+#             print("Вакансия 1 лучше вакансии 0")
+#         else:
+#             print("Зарплаты равны")
+#     else:
+#         print("Недостаточно вакансий для сравнения")
+#
+#     # Сортируем по возрастанию зарплаты
+#     sorted_vacancies_asc = Vacancy.sort_vacancies_by_salary(vacancies)
+#
+#     # Сортируем по убыванию зарплаты
+#     sorted_vacancies_desc = Vacancy.sort_vacancies_by_salary(vacancies, reverse=False)
+#
+#     # Выводим результат
+#     for vacancy in sorted_vacancies_desc:
+#         print(vacancy)
