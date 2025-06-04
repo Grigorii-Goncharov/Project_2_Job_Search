@@ -4,6 +4,7 @@ from src.class_api import HeadHunterAPI
 from src.utills import json_load
 import json
 
+
 class Vacancy:
     """Класс для обработки вакансий"""
 
@@ -40,7 +41,6 @@ class Vacancy:
         self.salary_from = self.__salary_from()  # Валидируем строку от из словаря
         self.salary_to = self.__salary_to()  # Валидируем строку до из словаря
 
-
     def __salary_from(self) -> int:
         """Валидация данных по зарплате для поля 'от'"""
         self.salary_from = 0
@@ -65,7 +65,6 @@ class Vacancy:
                 self.salary_to = "по договоренности"
         return self.salary_to
 
-
     def __str__(self) -> str:
         """Метод преобразования атрибутов в строку и вывод в консоль"""
         return (f" id Вакансии: {self.id}\n "
@@ -74,7 +73,6 @@ class Vacancy:
                 f"Описание: {self.description}\n "
                 f"Зарплата от: {self.salary_from}\n "
                 f"Зарплата до: {self.salary_to}\n")
-
 
     def __ge__(self, other):
         """Методы сравнения конкретных вакансий"""
@@ -140,7 +138,6 @@ class Vacancy:
         """Сортировка списка вакансий по зарплате (по возрастанию или убыванию)"""
         return sorted(vacancies, key=lambda x: x.salary_from, reverse=reverse)
 
-
     def to_dict(self) -> dict:
         """Преобразует объект Vacancy в словарь для сериализации в JSON"""
         return {
@@ -151,7 +148,6 @@ class Vacancy:
             "description": self.description,
             "salary_from": self.salary_from,
             "salary_to": self.salary_to}
-
 
     @staticmethod
     def load_from_json(filename: str) -> List["Vacancy"]:
@@ -177,7 +173,6 @@ class Vacancy:
         except json.JSONDecodeError:
             print(f"Ошибка при чтении JSON из файла {filename}.")
             return []
-
 
 # if __name__ == "__main__":
 #     hh_api = HeadHunterAPI() # создаем объект API

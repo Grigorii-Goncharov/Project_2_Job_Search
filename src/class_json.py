@@ -39,7 +39,6 @@ class JSONSaver:
         except Exception as e:
             print(f"Ошибка при сохранении данных в JSON: {e}")
 
-
     def load_from_json(self) -> list:
         try:
             with open(self.filepath, "r", encoding="utf-8") as file:
@@ -52,7 +51,6 @@ class JSONSaver:
             print(f"Ошибка чтения JSON из файла {self.filepath}.")
             return []
 
-
     def clear_file(self) -> None:
         try:
             with open(self.filepath, "w", encoding="utf-8") as file:
@@ -60,7 +58,6 @@ class JSONSaver:
             print(f"Файл {self.filepath} очищен.")
         except Exception as e:
             print(f"Ошибка при очистке файла: {e}")
-
 
     def add_vacancy(self, vacancy: Union[Vacancy, dict]) -> None:
         current_data = self.load_from_json()  # Теперь это список словарей
@@ -116,7 +113,6 @@ class JSONSaver:
         data = self.load_from_json()
         pattern = re.compile(keyword, re.IGNORECASE)
 
-
         filtered_data = [
             item for item in data
             if pattern.search(item.get("name", ""))
@@ -153,7 +149,6 @@ class JSONSaver:
         """Загружает вакансии и возвращает их как объекты Vacancy"""
         data = self.load_from_json()
         return Vacancy.cast_to_object_list(data)
-
 
 # if __name__ == "__main__":
 #     # Инициализация API и JSONSaver

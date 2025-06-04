@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional
 
+
 class BaseAPI(ABC):
     """Абстрактный класс для работы с API сервиса с вакансиями"""
+
     @abstractmethod
     def get_vacancies(self):
         """Абстрактный метод получения вакансий"""
@@ -12,6 +14,7 @@ class BaseAPI(ABC):
     @abstractmethod
     def url(self):
         pass
+
 
 class BaseFileStorage(ABC):
     """Абстрактный класс для работы с файлами или хранилищами данных"""
@@ -30,7 +33,3 @@ class BaseFileStorage(ABC):
     def delete_vacancy(self, criteria: Dict[str, Any]) -> None:
         """Удалить вакансию по критерию"""
         pass
-
-
-
-
