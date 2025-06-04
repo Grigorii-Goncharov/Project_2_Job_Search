@@ -1,6 +1,4 @@
-from typing import List, Dict, Any, Optional, Union
-import pprint
-from src.class_api import HeadHunterAPI
+from typing import List, Dict, Any
 from src.utills import json_load
 import json
 

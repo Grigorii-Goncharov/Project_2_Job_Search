@@ -1,7 +1,6 @@
 import requests
 from config import USER_AGENT
 from src.class_abstract import BaseAPI
-import pprint
 import os
 
 # Получаем путь к текущему скрипту
@@ -33,7 +32,7 @@ class HeadHunterAPI(BaseAPI):
         return self.__vacancies
 
     def __response_check(self) -> bool:
-        """Проверяет доступность API - для внутренних методов"""
+        """Защищенный метод Проверяет доступность API - для внутренних методов"""
         try:
             response = requests.get(self.__url, timeout=5)
             response.raise_for_status()  # if status_code == 200
@@ -42,6 +41,7 @@ class HeadHunterAPI(BaseAPI):
             return False
 
     def get_vacancies(self, text: str, per_page: int = 10) -> list[dict]:
+        """Метод получения вакансий по API """
         if not self.__response_check():
             raise ConnectionError("API недоступно. Невозможно получить вакансии.")
 

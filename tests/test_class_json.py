@@ -12,7 +12,7 @@ def setup_test_file(data=None):
 
 def test_save_to_json():
     """Тест: запись вакансий в JSON"""
-    print("\n=== Тест: save_to_json ===")
+    print("\nТест: save_to_json")
     saver = JSONSaver()
 
     mock_data = [
@@ -44,7 +44,7 @@ def test_save_to_json():
 
 def test_load_from_json():
     """Тест: загрузка данных из файла"""
-    print("\n=== Тест: load_from_json ===")
+    print("\nТест: load_from_json")
     saver = setup_test_file([
         {
             "name": "Тестировщик",
@@ -63,7 +63,7 @@ def test_load_from_json():
 
 def test_add_vacancy():
     """Тест: добавление новой вакансии как объекта или словаря"""
-    print("\n=== Тест: add_vacancy ===")
+    print("\nТест: add_vacancy")
     saver = setup_test_file([])
 
     vacancy = Vacancy(
@@ -90,16 +90,16 @@ def test_add_vacancy():
     print(" test_add_vacancy — пройден")
 
 
-def test_delete_vacancy_by_id():
+def test_delete_vacancy():
     """Тест: удаление вакансии по ID"""
-    print("\n=== Тест: delete_vacancy_by_id ===")
+    print("\n Тест: delete_vacancy")
     test_data = [
         {"name": "Вакансия 1", "id": "1"},
         {"name": "Вакансия 2", "id": "2"}
     ]
     saver = setup_test_file(test_data)
 
-    saver.delete_vacancy_by_id("1")
+    saver.delete_vacancy("1")
     data = saver.load_from_json()
     assert len(data) == 1
     assert data[0]["id"] == "2"
@@ -108,7 +108,7 @@ def test_delete_vacancy_by_id():
 
 def test_filter_vacancies_by_salary_range():
     """Тест: фильтрация вакансий по зарплате"""
-    print("\n=== Тест: filter_vacancies_by_salary_range ===")
+    print("\nТест: filter_vacancies_by_salary_range")
     test_data = [
         {"name": "Вакансия 1", "id": "1", "salary_from": 50000, "salary_to": 80000},
         {"name": "Вакансия 2", "id": "2", "salary_from": 100000, "salary_to": 150000},
@@ -122,7 +122,7 @@ def test_filter_vacancies_by_salary_range():
 
 def test_search_vacancies_by_keyword():
     """Тест: поиск по ключевому слову (включая 'area')"""
-    print("\n=== Тест: search_vacancies_by_keyword ===")
+    print("\n Тест: search_vacancies_by_keyword")
     test_data = [
         {"name": "Python разработчик", "description": "", "area": "Москва"},
         {"name": "Python", "description": "Ищем разработчика", "area": "Санкт-Петербург"},

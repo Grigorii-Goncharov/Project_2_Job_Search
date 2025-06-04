@@ -1,12 +1,12 @@
 import os
 import json
 import re
-from typing import Union, List
+from typing import Union
 from src.class_vacancy import Vacancy
-from src.class_api import HeadHunterAPI
+from src.class_abstract import BaseFileStorage
 
 
-class JSONSaver:
+class JSONSaver(BaseFileStorage):
     """Класс для сохранения и загрузки данных о вакансиях в/из JSON-файла."""
 
     def __init__(self):
@@ -51,14 +51,6 @@ class JSONSaver:
             print(f"Ошибка чтения JSON из файла {self.filepath}.")
             return []
 
-    def clear_file(self) -> None:
-        try:
-            with open(self.filepath, "w", encoding="utf-8") as file:
-                file.write("[]")
-            print(f"Файл {self.filepath} очищен.")
-        except Exception as e:
-            print(f"Ошибка при очистке файла: {e}")
-
     def add_vacancy(self, vacancy: Union[Vacancy, dict]) -> None:
         current_data = self.load_from_json()  # Теперь это список словарей
 
@@ -82,7 +74,7 @@ class JSONSaver:
         except IOError as e:
             print(e)
 
-    def delete_vacancy_by_id(self, id: str) -> None:
+    def delete_vacancy(self, id: str) -> None:
         data = self.load_from_json()
         filtered_data = [item for item in data if item.get("id") != id]
 
@@ -110,6 +102,7 @@ class JSONSaver:
         return result
 
     def filter_vacancies_by_keyword(self, keyword: str) -> list[Vacancy]:
+        """Метод фильтрации вакансии по ключевому слову"""
         data = self.load_from_json()
         pattern = re.compile(keyword, re.IGNORECASE)
 
@@ -125,6 +118,7 @@ class JSONSaver:
         return result
 
     def filter_vacancies_by_salary_range(self, salary_range: str) -> list[Vacancy]:
+        """Метод фильтрации вакансии по диапазону зарплат"""
         try:
             min_salary, max_salary = map(int, salary_range.split("-"))
         except ValueError:
