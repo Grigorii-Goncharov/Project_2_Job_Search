@@ -158,7 +158,7 @@ class Vacancy:
                 vacancy = Vacancy(
                     id=item["id"],
                     name=item["name"],
-                    area=item["area"]["name"],
+                    area=item["area"],
                     salary=item["salary"],
                     description=item["description"]
                 )
