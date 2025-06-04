@@ -1,9 +1,10 @@
-import os
 import json
+import os
 import re
 from typing import Union
-from src.class_vacancy import Vacancy
+
 from src.class_abstract import BaseFileStorage
+from src.class_vacancy import Vacancy
 
 
 class JSONSaver(BaseFileStorage):
@@ -92,10 +93,11 @@ class JSONSaver(BaseFileStorage):
         pattern = re.compile(keyword, re.IGNORECASE)
 
         result = [
-            item for item in data
+            item
+            for item in data
             if pattern.search(item.get("name", ""))
-               or pattern.search(item.get("description", ""))
-               or pattern.search(item.get("area", ""))
+            or pattern.search(item.get("description", ""))
+            or pattern.search(item.get("area", ""))
         ]
 
         print(f"Найдено {len(result)} вакансий по ключевому слову '{keyword}'.")
@@ -107,10 +109,11 @@ class JSONSaver(BaseFileStorage):
         pattern = re.compile(keyword, re.IGNORECASE)
 
         filtered_data = [
-            item for item in data
+            item
+            for item in data
             if pattern.search(item.get("name", ""))
-               or pattern.search(item.get("description", ""))
-               or pattern.search(item.get("area", ""))
+            or pattern.search(item.get("description", ""))
+            or pattern.search(item.get("area", ""))
         ]
 
         result = Vacancy.cast_to_object_list(filtered_data)
@@ -131,8 +134,9 @@ class JSONSaver(BaseFileStorage):
             salary_from = item.get("salary_from", 0)
             salary_to = item.get("salary_to", 0)
 
-            if (salary_from and min_salary <= salary_from <= max_salary) or \
-                    (salary_to and min_salary <= salary_to <= max_salary):
+            if (salary_from and min_salary <= salary_from <= max_salary) or (
+                salary_to and min_salary <= salary_to <= max_salary
+            ):
                 filtered_data.append(item)
 
         result = Vacancy.cast_to_object_list(filtered_data)
@@ -143,6 +147,7 @@ class JSONSaver(BaseFileStorage):
         """Загружает вакансии и возвращает их как объекты Vacancy"""
         data = self.load_from_json()
         return Vacancy.cast_to_object_list(data)
+
 
 # if __name__ == "__main__":
 #     # Инициализация API и JSONSaver
@@ -177,7 +182,8 @@ class JSONSaver(BaseFileStorage):
 #     print("\n=== Фильтруем вакансии по зарплате от 70 000 до 150 000 ===")
 #     filtered_by_salary = saver.filter_vacancies_by_salary_range("70000-150000")
 #     for vacancy in filtered_by_salary:
-#         print(f"{vacancy.name} | {vacancy.salary_from}-{vacancy.salary_to} | {vacancy.id}")  # Фильтрация вакансии по диапазоу ЗП
+#         print(f"{vacancy.name} | {vacancy.salary_from}-{vacancy.salary_to} | {vacancy.id}")
+#  Фильтрация вакансии по диапазоу ЗП
 # #
 #     print("\n=== Удаляем вакансию по id ===")
 #     saver.delete_vacancy_by_id("1234567890")  # Удаление вакансии из JSON по ID
@@ -185,7 +191,8 @@ class JSONSaver(BaseFileStorage):
 #     print("\n=== Проверяем итоговый список вакансий после всех изменений ===")
 #     final_vacancies = saver.load_from_json()
 #     for vacancy in final_vacancies:
-#         print(f"{vacancy.get('name')} | {vacancy.get('area')} | {vacancy.get('salary_from')}-{vacancy.get('salary_to')} | {vacancy.get('id')}")
+#         print(f"{vacancy.get('name')} | {vacancy.get('area')} | {vacancy.get('salary_from')}
+#         -{vacancy.get('salary_to')} | {vacancy.get('id')}")
 #         # Вывод итоговый по наличию вакансий
 # #
 #     print("\n=== Содержимое файла после сохранения ===")

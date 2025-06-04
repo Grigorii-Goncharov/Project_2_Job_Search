@@ -1,7 +1,9 @@
+import os
+
 import requests
+
 from config import USER_AGENT
 from src.class_abstract import BaseAPI
-import os
 
 # Получаем путь к текущему скрипту
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -13,7 +15,7 @@ class HeadHunterAPI(BaseAPI):
 
     def __init__(self) -> None:
         self.__url = "https://api.hh.ru/vacancies"
-        self.__headers = {'User-Agent': USER_AGENT}
+        self.__headers = {"User-Agent": USER_AGENT}
         self.__vacancies = []
 
     @property
@@ -41,18 +43,19 @@ class HeadHunterAPI(BaseAPI):
             return False
 
     def get_vacancies(self, text: str, per_page: int = 10) -> list[dict]:
-        """Метод получения вакансий по API """
+        """Метод получения вакансий по API"""
         if not self.__response_check():
             raise ConnectionError("API недоступно. Невозможно получить вакансии.")
 
-        params = {'text': text, 'per_page': per_page}
+        params = {"text": text, "per_page": per_page}
         try:
             response = requests.get(self.__url, headers=self.__headers, params=params)
             response.raise_for_status()  # Если код будет 200
-            self.__vacancies = response.json().get('items', [])  # получение items если найдет( или [] )
+            self.__vacancies = response.json().get("items", [])  # получение items если найдет( или [] )
             return self.__vacancies
         except requests.exceptions.RequestException as e:  # отлов только сетевых ошибок
             raise ValueError(f"Ошибка при выполнении запроса: {e}") from e  # Сохранить историю ошибки from e
+
 
 # if __name__ == "__main__":
 #     load = HeadHunterAPI()  # создаем объект API

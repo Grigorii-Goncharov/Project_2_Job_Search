@@ -12,13 +12,13 @@ class BaseAPI(ABC):
     @property
     @abstractmethod
     def url(self):
-        """ Абстрактный метод получение приватного атрибута url"""
+        """Абстрактный метод получение приватного атрибута url"""
         pass
 
     @property
     @abstractmethod
     def headers(self):
-        """ Абстрактный метод получение приватного атрибута headers"""
+        """Абстрактный метод получение приватного атрибута headers"""
         pass
 
     @property

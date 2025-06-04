@@ -1,29 +1,15 @@
-from typing import List, Dict, Any
-from src.utills import json_load
 import json
+from typing import Any, Dict, List
+
+from src.utills import json_load
 
 
 class Vacancy:
     """Класс для обработки вакансий"""
 
-    __slots__ = (
-        "id",
-        "name",
-        "area",
-        "__salary",
-        "description",
-        "salary_from",
-        "salary_to"
-    )
+    __slots__ = ("id", "name", "area", "__salary", "description", "salary_from", "salary_to")
 
-    def __init__(
-            self,
-            name: str,
-            id: str,
-            salary: dict[str, int, float],
-            area: str,
-            description: str
-    ):
+    def __init__(self, name: str, id: str, salary: dict[str, int, float], area: str, description: str):
 
         self.name = name
         self.id = id
@@ -65,12 +51,14 @@ class Vacancy:
 
     def __str__(self) -> str:
         """Метод преобразования атрибутов в строку и вывод в консоль"""
-        return (f" id Вакансии: {self.id}\n "
-                f"Должность: {self.name}\n "
-                f"Город: {self.area}\n "
-                f"Описание: {self.description}\n "
-                f"Зарплата от: {self.salary_from}\n "
-                f"Зарплата до: {self.salary_to}\n")
+        return (
+            f" id Вакансии: {self.id}\n "
+            f"Должность: {self.name}\n "
+            f"Город: {self.area}\n "
+            f"Описание: {self.description}\n "
+            f"Зарплата от: {self.salary_from}\n "
+            f"Зарплата до: {self.salary_to}\n"
+        )
 
     def __ge__(self, other):
         """Методы сравнения конкретных вакансий"""
@@ -115,15 +103,8 @@ class Vacancy:
                 salary = item.get("salary", {})
 
                 # Создание объекта Vacancy
-                vacancy = Vacancy(
-                    id=id,
-                    name=name,
-                    area=area,
-                    salary=salary,
-                    description=description
-                )
+                vacancy = Vacancy(id=id, name=name, area=area, salary=salary, description=description)
                 vacancy_list.append(vacancy)
-
 
             except Exception as e:
                 print(f"Ошибка при обработке вакансии: {e}")
@@ -145,7 +126,8 @@ class Vacancy:
             "salary": self.__salary,  # Сохраняем оригинальный словарь с зарплатой
             "description": self.description,
             "salary_from": self.salary_from,
-            "salary_to": self.salary_to}
+            "salary_to": self.salary_to,
+        }
 
     @staticmethod
     def load_from_json(filename: str) -> List["Vacancy"]:
@@ -160,7 +142,7 @@ class Vacancy:
                     name=item["name"],
                     area=item["area"],
                     salary=item["salary"],
-                    description=item["description"]
+                    description=item["description"],
                 )
                 vacancies.append(vacancy)
             return vacancies
@@ -171,6 +153,7 @@ class Vacancy:
         except json.JSONDecodeError:
             print(f"Ошибка при чтении JSON из файла {filename}.")
             return []
+
 
 # if __name__ == "__main__":
 #     hh_api = HeadHunterAPI() # создаем объект API
